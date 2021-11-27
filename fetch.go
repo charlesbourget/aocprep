@@ -44,7 +44,7 @@ func FetchInput(day int, year int) ([]byte, error) {
 }
 
 func loadEnv() (string, error) {
-	err := godotenv.Load(".env")
+	err := godotenv.Load("resources/.env")
 	if err != nil {
 		return "", err
 	}
