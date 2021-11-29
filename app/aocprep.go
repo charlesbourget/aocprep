@@ -1,31 +1,20 @@
-package main
+package app
 
 import (
 	"bufio"
-	"embed"
 	_ "embed"
-	"errors"
-	"flag"
 	"fmt"
-	"io"
 	"os"
-	"strconv"
+	"text/template"
 )
 
-//go:embed resources/template
-var f embed.FS
+type config struct {
+	Day  int
+	Year int
+}
 
-func main() {
-	flag.Usage = func() {
-		fmt.Println("Usage: prepare <day> <work dir>")
-		flag.PrintDefaults()
-	}
-
-	day, year, workDir, err := parse()
-	if err != nil {
-		fmt.Println("Error while parsing args. ", err)
-		return
-	}
+func Start(day int, year int, workDir string) {
+	fmt.Println("Advent of Code Preparator 🎅")
 
 	name := fmt.Sprintf("day%d", day)
 	path := workDir
@@ -39,7 +28,7 @@ func main() {
 		return
 	}
 
-	err = createSourceFile(dirPath, name, "resources/template")
+	err = createSourceFile(dirPath, name, "resources/source.tmpl", day, year)
 	if err != nil {
 		fmt.Println("Error while creating source file ", err)
 		return
@@ -66,17 +55,14 @@ func createDir(path string, name string) (string, error) {
 	return path + name, nil
 }
 
-func createSourceFile(dirPath string, name string, src string) error {
+func createSourceFile(dirPath string, name string, src string, day int, year int) error {
 	dest := fmt.Sprintf("%s/%s.go", dirPath, name)
 	if _, err := os.Stat(dest); err == nil {
 		return nil
 	}
 
-	source, err := f.Open(src)
-	if err != nil {
-		return err
-	}
-	defer source.Close()
+	fileTemplate := FileTemplate()
+	t := template.Must(template.New("fileTemplate").Parse(fileTemplate))
 
 	destination, err := os.Create(dest)
 	if err != nil {
@@ -84,9 +70,9 @@ func createSourceFile(dirPath string, name string, src string) error {
 	}
 	defer destination.Close()
 
-	_, err = io.Copy(destination, source)
+	err = t.Execute(destination, &config{day, year})
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	return nil
@@ -112,23 +98,4 @@ func createInputFile(dirPath string, name string, day int, year int) error {
 	}
 
 	return nil
-}
-
-func parse() (int, int, string, error) {
-	if len(os.Args) <= 3 {
-		return 0, 0, "", errors.New("missing args. 3 minimum")
-	}
-
-	flag.Parse()
-	day, err := strconv.Atoi(flag.Arg(0))
-	if err != nil {
-		return 0, 0, "", err
-	}
-	year, err := strconv.Atoi(flag.Arg(1))
-	if err != nil {
-		return 0, 0, "", err
-	}
-	workDir := flag.Arg(2)
-
-	return day, year, workDir, nil
 }

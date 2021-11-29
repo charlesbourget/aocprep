@@ -1,17 +1,15 @@
-package main
+package app
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"io"
 	"net/http"
-	"os"
 )
 
 var url = "https://adventofcode.com/%d/day/%d/input"
 
 func FetchInput(day int, year int) ([]byte, error) {
-	token, err := loadEnv()
+	token, err := Token()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -41,13 +39,4 @@ func FetchInput(day int, year int) ([]byte, error) {
 	}
 
 	return input, nil
-}
-
-func loadEnv() (string, error) {
-	err := godotenv.Load("resources/.env")
-	if err != nil {
-		return "", err
-	}
-
-	return os.Getenv("AOC_SESSION"), nil
 }
