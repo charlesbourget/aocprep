@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"text/template"
+	"time"
 )
 
 type config struct {
@@ -15,6 +16,12 @@ type config struct {
 
 func Start(day int, year int, workDir string) {
 	fmt.Println("Advent of Code Preparator 🎅")
+
+	isDateValid, err := validateDate(day, year)
+	if !isDateValid {
+		fmt.Println("Too early please wait for midnight EST")
+		return
+	}
 
 	name := fmt.Sprintf("day%d", day)
 	path := workDir
@@ -98,4 +105,14 @@ func createInputFile(dirPath string, name string, day int, year int) error {
 	}
 
 	return nil
+}
+
+func validateDate(day int, year int) (bool, error) {
+	location, err := time.LoadLocation("America/New_York")
+	if err != nil {
+		return false, err
+	}
+	requestedDateEST := time.Date(year, 12, day, 0, 0, 0, 0, location)
+
+	return time.Now().In(location).After(requestedDateEST), nil
 }
