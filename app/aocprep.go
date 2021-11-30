@@ -16,6 +16,7 @@ type config struct {
 
 func Start(day int, year int, workDir string) {
 	fmt.Println("Advent of Code Preparator 🎅")
+	fmt.Printf("Preparing setup for day %d\n", day)
 
 	isDateValid, err := validateDate(day, year)
 	if !isDateValid {
@@ -88,6 +89,7 @@ func createSourceFile(dirPath string, name string, src string, day int, year int
 func createInputFile(dirPath string, name string, day int, year int) error {
 	dest := fmt.Sprintf("%s/%s", dirPath, name)
 	if _, err := os.Stat(dest); err == nil {
+		fmt.Println("Input file already exists. Won't download again to prevent overloading the server. 💻")
 		return nil
 	}
 
