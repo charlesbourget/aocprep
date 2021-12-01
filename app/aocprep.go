@@ -2,7 +2,6 @@ package app
 
 import (
 	"bufio"
-	_ "embed"
 	"fmt"
 	"os"
 	"text/template"
