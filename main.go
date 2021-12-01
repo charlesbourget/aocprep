@@ -30,11 +30,11 @@ func parse() (int, int, string, error) {
 	}
 
 	flag.Parse()
-	day, err := strconv.Atoi(flag.Arg(0))
+	year, err := strconv.Atoi(flag.Arg(1))
 	if err != nil {
 		return 0, 0, "", err
 	}
-	year, err := strconv.Atoi(flag.Arg(1))
+	day, err := strconv.Atoi(flag.Arg(0))
 	if err != nil {
 		return 0, 0, "", err
 	}
