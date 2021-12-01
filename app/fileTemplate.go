@@ -5,7 +5,7 @@ func FileTemplate() string {
 
 import (
 	"fmt"
-	"github.com/charlesbourget/aoc{{.Year}}-go/lib"
+	"github.com/charlesbourget/aoc{{.Year}}/lib"
 )
 
 func main() {
