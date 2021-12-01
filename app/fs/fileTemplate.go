@@ -1,4 +1,4 @@
-package app
+package fs
 
 func FileTemplate() string {
 	return `package main

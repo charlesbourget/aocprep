@@ -1,23 +1,20 @@
 package app
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"text/template"
+	"github.com/charlesbourget/aocprep/app/fs"
 	"time"
 )
-
-type config struct {
-	Day  int
-	Year int
-}
 
 func Start(day int, year int, workDir string) {
 	fmt.Println("Advent of Code Preparator 🎅")
 	fmt.Printf("Preparing setup for day %d\n", day)
 
 	isDateValid, err := validateDate(day, year)
+	if err != nil {
+		fmt.Println("Error while validating Date. Make sure the date is valid.", err)
+		return
+	}
 	if !isDateValid {
 		fmt.Println("Too early please wait for midnight EST")
 		return
@@ -29,83 +26,9 @@ func Start(day int, year int, workDir string) {
 		path += "/"
 	}
 
-	dirPath, err := createDir(path, name)
-	if err != nil {
-		fmt.Println("Error while creating directory ", err)
-		return
-	}
-
-	err = createSourceFile(dirPath, name, "resources/source.tmpl", day, year)
-	if err != nil {
-		fmt.Println("Error while creating source file ", err)
-		return
-	}
-	err = createInputFile(dirPath, "input", day, year)
-	if err != nil {
-		fmt.Println("Error while creating source file", err)
-		return
-	}
+	fs.CreateStructure(path, name, year, day)
 
 	fmt.Printf("Structure for day %d created! 🚀\n", day)
-}
-
-func createDir(path string, name string) (string, error) {
-	if _, err := os.Stat(path + name); err == nil {
-		return path + name, nil
-	}
-
-	err := os.Mkdir(path+name, os.ModePerm)
-	if err != nil {
-		return "", err
-	}
-
-	return path + name, nil
-}
-
-func createSourceFile(dirPath string, name string, src string, day int, year int) error {
-	dest := fmt.Sprintf("%s/%s.go", dirPath, name)
-	if _, err := os.Stat(dest); err == nil {
-		return nil
-	}
-
-	fileTemplate := FileTemplate()
-	t := template.Must(template.New("fileTemplate").Parse(fileTemplate))
-
-	destination, err := os.Create(dest)
-	if err != nil {
-		return err
-	}
-	defer destination.Close()
-
-	err = t.Execute(destination, &config{day, year})
-	if err != nil {
-		panic(err)
-	}
-
-	return nil
-}
-
-func createInputFile(dirPath string, name string, day int, year int) error {
-	dest := fmt.Sprintf("%s/%s", dirPath, name)
-	if _, err := os.Stat(dest); err == nil {
-		fmt.Println("Input file already exists. Won't download again to prevent overloading the server. 💻")
-		return nil
-	}
-
-	input, err := FetchInput(day, year)
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Create(dest)
-	writer := bufio.NewWriter(file)
-	defer writer.Flush()
-	_, err = writer.Write(input)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func validateDate(day int, year int) (bool, error) {
