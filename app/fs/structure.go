@@ -20,12 +20,26 @@ func CreateStructure(path string, name string, year int, day int) {
 		return
 	}
 
-	err = createSourceFile(dirPath, name, "resources/source.tmpl", day, year)
+	// Source file
+	err = createFileTemplate(dirPath, name, day, year, SourceFileTemplate())
 	if err != nil {
 		fmt.Println("Error while creating source file ", err)
 		return
 	}
+	// Test source file
+	err = createFileTemplate(dirPath, name+"_test", day, year, TestFileTemplate())
+	if err != nil {
+		fmt.Println("Error while creating source file ", err)
+		return
+	}
+	// Input file
 	err = createInputFile(dirPath, "input", day, year)
+	if err != nil {
+		fmt.Println("Error while creating source file", err)
+		return
+	}
+	// Test input file
+	_, err = createFile(dirPath, "input", "test")
 	if err != nil {
 		fmt.Println("Error while creating source file", err)
 		return
@@ -45,33 +59,28 @@ func createDir(path string, name string) (string, error) {
 	return path + name, nil
 }
 
-func createSourceFile(dirPath string, name string, src string, day int, year int) error {
-	dest := fmt.Sprintf("%s/%s.go", dirPath, name)
-	if _, err := os.Stat(dest); err == nil {
-		return nil
-	}
+func createFileTemplate(dirPath string, name string, day int, year int, fileTemplate string) error {
+	file, err := createFile(dirPath, name, "go")
 
-	fileTemplate := FileTemplate()
 	t := template.Must(template.New("fileTemplate").Parse(fileTemplate))
 
-	destination, err := os.Create(dest)
+	defer file.Close()
+
+	err = t.Execute(file, &config{day, year})
 	if err != nil {
 		return err
-	}
-	defer destination.Close()
-
-	err = t.Execute(destination, &config{day, year})
-	if err != nil {
-		panic(err)
 	}
 
 	return nil
 }
 
 func createInputFile(dirPath string, name string, day int, year int) error {
-	dest := fmt.Sprintf("%s/%s", dirPath, name)
-	if _, err := os.Stat(dest); err == nil {
-		fmt.Println("Input file already exists. Won't download again to prevent overloading the server. 💻")
+	file, err := createFile(dirPath, name, "")
+	if err != nil {
+		return err
+	}
+	if file == nil {
+		fmt.Println("Input already exists. Skipping")
 		return nil
 	}
 
@@ -80,7 +89,6 @@ func createInputFile(dirPath string, name string, day int, year int) error {
 		return err
 	}
 
-	file, err := os.Create(dest)
 	writer := bufio.NewWriter(file)
 	defer writer.Flush()
 	_, err = writer.Write(input)
@@ -89,4 +97,22 @@ func createInputFile(dirPath string, name string, day int, year int) error {
 	}
 
 	return nil
+}
+
+func createFile(dirPath string, name string, ext string) (*os.File, error) {
+	dest := fmt.Sprintf("%s/%s", dirPath, name)
+	if ext != "" {
+		dest = fmt.Sprintf("%s.%s", dest, ext)
+	}
+	if _, err := os.Stat(dest); err == nil {
+		// File already exists
+		return &os.File{}, nil
+	}
+
+	file, err := os.Create(dest)
+	if err != nil {
+		return &os.File{}, err
+	}
+
+	return file, nil
 }
