@@ -11,10 +11,10 @@ Built with Go 1.16
 
 ## Usage
 
-To set up for day 5 of 2020 in the current directory.
+To set up for day 5 of 2021 in the current directory.
 
 ```bash
-aocprep 5 2021 .
+aocprep 2021 5 .
 ```
 
 ## Build
