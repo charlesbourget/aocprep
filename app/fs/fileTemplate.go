@@ -15,16 +15,16 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Part 1: %s\n", Part1(input))
-	fmt.Printf("Part 2: %s\n", Part2(input))
+	fmt.Printf("Part 1: %d\n", Part1(input))
+	fmt.Printf("Part 2: %d\n", Part2(input))
 }
 
-func Part1(input []string) string {
+func Part1(input []string) int {
 
 	return ""
 }
 
-func Part2(input []string) string {
+func Part2(input []string) int {
 
 	return ""
 }
@@ -48,10 +48,10 @@ func TestPart1(t *testing.T) {
 		return
 	}
 
-	expected := ""
+	expected := 0
 	result := Part1(input)
 	if result != expected {
-		t.Fatalf(` + "`" + `Part1() = %s, want %s, error` + "`" + `, result, expected)
+		t.Fatalf(` + "`" + `Part1() = %d, want %d, error` + "`" + `, result, expected)
 	}
 }
 
@@ -62,10 +62,10 @@ func TestPart2(t *testing.T) {
 		return
 	}
 
-	expected := ""
+	expected := 0
 	result := Part2(input)
 	if result != expected {
-		t.Fatalf(` + "`" + `Part2() = %s, want %s, error` + "`" + `, result, expected)
+		t.Fatalf(` + "`" + `Part2() = %d, want %d, error` + "`" + `, result, expected)
 	}
 }
 
