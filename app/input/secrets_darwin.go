@@ -1,3 +1,6 @@
+//go:build darwin
+// +build darwin
+
 package input
 
 import (
@@ -12,7 +15,7 @@ const service = "aocprep"
 const accessGroup = "github.com/charlesbourget/aocprep"
 const account = "Advent of Code"
 
-func Token() (token string, err error) {
+func Token() (session string, err error) {
 	query := keychain.NewItem()
 	query.SetSecClass(keychain.SecClassGenericPassword)
 	query.SetService(service)
@@ -22,17 +25,17 @@ func Token() (token string, err error) {
 	query.SetReturnData(true)
 	results, err := keychain.QueryItem(query)
 	if err != nil {
-		return token, err
+		return session, err
 	}
 	if len(results) != 1 {
 		// Token not found
-		token, _ = addToken()
+		session, _ = addToken()
 	} else {
 		fmt.Println("Found key")
-		token = string(results[0].Data)
+		session = string(results[0].Data)
 	}
 
-	return token, nil
+	return session, nil
 }
 
 func addToken() (string, error) {
