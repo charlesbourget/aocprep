@@ -1,12 +1,11 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
+	"github.com/akamensky/argparse"
 	"github.com/charlesbourget/aocprep/app"
 	"os"
-	"strconv"
 )
 
 func main() {
@@ -14,31 +13,20 @@ func main() {
 		fmt.Println("Usage: prepare <day> <work dir>")
 		flag.PrintDefaults()
 	}
+	parser := argparse.NewParser("aocprep", "Prepare for an Advent of Code day")
+	year := parser.Int("y", "year", &argparse.Options{Required: true, Help: "Year"})
+	day := parser.Int("d", "day", &argparse.Options{Required: true, Help: "Day"})
+	workDir := parser.String("w", "workDir", &argparse.Options{Required: false, Help: "Workdir"})
 
-	day, year, workDir, err := parse()
+	err := parser.Parse(os.Args)
 	if err != nil {
-		fmt.Println("Error while parsing args. ", err)
+		fmt.Println(parser.Usage(err))
 		return
 	}
 
-	app.Start(day, year, workDir)
-}
-
-func parse() (int, int, string, error) {
-	if len(os.Args) <= 3 {
-		return 0, 0, "", errors.New("missing args. 3 minimum")
+	if *workDir == "" {
+		*workDir = "."
 	}
 
-	flag.Parse()
-	year, err := strconv.Atoi(flag.Arg(0))
-	if err != nil {
-		return 0, 0, "", err
-	}
-	day, err := strconv.Atoi(flag.Arg(1))
-	if err != nil {
-		return 0, 0, "", err
-	}
-	workDir := flag.Arg(2)
-
-	return day, year, workDir, nil
+	app.Start(*day, *year, *workDir)
 }

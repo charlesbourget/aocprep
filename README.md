@@ -7,14 +7,14 @@ It doesn't work on Windows since it doesn't have a keychain but works on MacOS a
 This app prevents multiple download of inputs from AoC by checking if the file already exists. I cannot guarantee that you
 won't get banned tho so use at your own risk. (aka do you really trust me?)
 
-Built with Go 1.16
+Built with Go 1.17
 
 ## Usage
 
 To set up for day 5 of 2021 in the current directory.
 
 ```bash
-aocprep 2021 5 .
+aocprep -y 2021 -d 5 -w .
 ```
 
 ## Build
